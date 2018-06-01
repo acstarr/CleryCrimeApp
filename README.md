@@ -9,4 +9,4 @@ Team members: Calvin Aylward, Ethan Hardacre, Charles Shaviro, Adam Starr (proje
 
 The document [cecilsafe-overview.pdf](https://github.com/acstarr/CleryCrimeApp/blob/master/cecilsafe-overview.pdf) provides more details. 
 
-#Nota bene: The database only has reports from Janurary 2015 to mid March 2018. 
+# Nota bene: The database only has reports from Janurary 2015 to mid March 2018. 
