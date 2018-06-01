@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CecilSafe</title>
+    <style>
+    html, body {
+      padding: 0;
+      margin: 0;
+      background: #EFF6EE
+    }
+    *{
+      font-family: avenir;
+    }
+    .header{
+      margin: 0;
+      position: sticky;
+      width: auto;
+      overflow: hidden;
+      background: #273043;
+    }
+    .header a {
+      float: left;
+      color: #EFF6EE;
+      text-align: center;
+      padding: 12px;
+      text-decoration: none;
+      font-size: 18px;
+      line-height: 25px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .header-right {
+      display: inline-block;
+      float: right;
+    }
+    .header a:hover{
+      background-color: #202837;
+    }
+    
+    .header a.active {
+      background-color: #EFF6EE;
+      color: #273043;
+    }
+    
+    .body{
+      margin: 50px 50px 50px 50px;
+      float: center;
+      text-align: left;
+      font-size: 18px
+    }
+
+
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-right" style="margin-right:20px;margin-top:20px">
+          <a href="/">Home</a>
+          <a class="active" href="#about">About Us</a>
+      </div>
+      <h1 style="padding-left:5%;color:#EFF6EE">
+        CecilSafe
+      </h1>
+    </div>
+    <div class="body">
+      <p>
+        Ethan "Blake from Workaholics" Hardacre is a SCIAC champion in long jump out to prove that white men can jump.
+      </p> 
+      <p>
+        Adam "Twinkle Twinkle Little" Starr enjoys making not just sophisticated data visualization applications, but also tea, when he gets a free moment. 
+        He recently turned in his math thesis, and has been mailing in everything else since.
+      </p>
+      <p>
+        Thomas "Thomas Thornton" Thornton has a scar on his foot from when he was stung by a stingray over spring break. That's about all you
+        need to know about this straight shooter.
+      </p>
+      <p>
+        Calvin "Diesel" Aylward is a SCIAC champion in javelin. As Addison wrote: "Flies the javelin swifter to its mark, Launched by the vigor of a Roman arm?"
+      </p>
+      <p>
+        Chuck "The Truck" Shaviro is a born leader with no real discernible skills or talents, but he sure tries his best.
+      </p>
+    </div>
+  </body>
+</html>

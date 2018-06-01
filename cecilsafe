@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+<script
+        src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+        crossorigin="anonymous"></script>
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<link href='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css' rel='stylesheet' type='text/css'>
+
+    <title>CecilSafe</title>
+      <style>
+
+        /*GENERAL CSS*/
+        html, body {
+          padding: 0;
+          margin: 0;
+          overflow: hidden;
+        }
+        *{
+          font-family: avenir;
+        }
+
+        /*HEADER*/
+        .header{
+          margin: 0;
+          position: sticky;
+          width: auto;
+          overflow: hidden;
+          background: #273043;
+        }
+        .header a {
+          float: left;
+          color: #EFF6EE;
+          text-align: center;
+          padding: 12px;
+          text-decoration: none;
+          font-size: 18px;
+          line-height: 25px;
+          border-radius: 4px;
+          display: inline-block;
+        }
+        .header-right {
+          display: inline-block;
+          float: right;
+        }
+        .header a:hover{
+          background-color: #202837;
+        }
+        .header a.active {
+          background-color: #EFF6EE;
+          color: #273043;
+        }
+
+        /*SPLIT SCREEN*/
+        .split {
+          height: 90%;
+          width: 50%;
+          position:fixed;
+          z-index: 1;
+          top: auto;
+        }
+        .left {
+          left: auto;
+          background-color: #CFDBD5;
+        }
+
+        /*DATA DISPLAY SIDE OF SCREEN*/
+        .right {
+          left: 50%;
+          background-color: #EFF6EE;
+        }
+      </style>
+      <style>
+        .allDataDisplay{
+          width:100%;
+          height:75%;
+          padding-left:0; padding-right: 0;
+          margin-left: 0%; margin-right: 0%;
+          margin-top: 5%;
+        }
+        .dataDisplay {
+          width: 80%;
+          height: 100%;
+          padding-left:0; padding-right: 0;
+          margin-left: 10%; margin-right: 10%;
+          background: #EFF6EE;
+        }
+        .top {
+          margin-top: 5%;
+        }
+        .prev1, .next1 {
+          cursor: pointer;
+          position: absolute;
+          top: 50%;
+          width: auto;
+          margin-top: -22px;
+          padding: 16px;
+          color: white;
+          font-weight: bold;
+          font-size: 18px;
+          transition: 0.6s ease;
+          border-radius: 0 3px 3px 0;
+        }
+
+        /* THE DISPLAY OF DATA */
+        .next1 {
+          right: 0;
+          border-radius: 3px 0 0 3px;
+        }
+        .prev1 {
+          left: 0;
+        }
+        .prev1:hover, .next1:hover {
+          background-color: rgba(39,48,67,0.8);
+        }
+        .dot {
+          cursor: pointer;
+          height: 10px;
+          width: 10px;
+          margin: 0 2px;
+          background-color: #EFF6EE;
+          border-radius: 50%;
+          display: inline-block;
+          transition: background-color 0.6s ease;
+          margin-top: 5%;
+        }
+        .active, .dot:hover {
+          background-color: #273043;
+        }
+        .display {
+          width:100%;
+          height:100%;
+          display: none; /* Hide all Displays initially */
+        }
+        .activeDisplay {
+          display:block;
+        }
+
+        /* HEATMAP */
+        #map {
+          height: 100%;
+          width: 100%;
+        }
+
+        #dataTable {
+            overflow-y: auto;
+            max-height:100%;
+            max-width: 100%;
+        }
+
+        #graph {
+            height:100%;
+            width:100%
+        }
+
+        #chartContainer {
+            position: relative;
+        }
+
+
+
+      </style>
+      <style>
+
+        /*FILTER HEADERS AND TITLES*/
+        .filterTitle {
+          width:100%;
+          text-align: center;
+          color: #273043;
+          line-height: 5%;
+        }
+        #displayTitle {
+          width:100%;
+          text-align: center;
+          color: #273043;
+          line-height: 5%;
+        }
+        .filterHeader {
+          width: 80%;
+          height: 25px;
+          padding-left: 0; padding-right: 0;
+          margin-left:10%; margin-right: 10%;
+          background-color: #650212;
+          vertical-align: middle;
+        }
+
+        /*SEARCH BAR AND UNORDERED LIST*/
+        #dispositionInput {
+          width: 100%;
+          position: relative;
+          font-size: 16px;
+          padding: 12px 20px 12px 40px;
+          border: 1px solid #ddd;
+          margin-left: 0;
+          margin-right: 0;
+          margin-top: 5%;
+          outline:none;
+        }
+        #crimeInput {
+          width: 100%;
+          position: relative;
+          font-size: 16px;
+          padding: 12px 20px 12px 40px;
+          border: 1px solid #ddd;
+          margin-left: 0;
+          margin-right: 0;
+          margin-top: 5%;
+          outline:none;
+        }
+        #crime {
+          list-style-type: none;
+          padding: 0;
+        }
+        #crime li a {
+          border: 1px solid #ddd;
+          margin-top: -1px;
+          background-color: #f6f6f6;
+          padding: 12px;
+          text-decoration: none;
+          font-size: 18px;
+          color: black;
+          display: block;
+        }
+        #crime li a:hover:not(.header .selected) {
+          background-color: #eee; /* Add a hover effect to all links, except for headers */
+        }
+        #crime li a.selected{
+          background-color: #991D25;
+          color: #EFF6EE;
+        }
+
+        #disposition {
+          list-style-type: none;
+          padding: 0;
+        }
+        #disposition li a {
+          border: 1px solid #ddd;
+          margin-top: -1px;
+          background-color: #f6f6f6;
+          padding: 12px;
+          text-decoration: none;
+          font-size: 18px;
+          color: black;
+          display: block;
+        }
+        #disposition li a:hover:not(.header .selected) {
+          background-color: #eee; /* Add a hover effect to all links, except for headers */
+        }
+        #disposition li a.selected{
+          background-color: #991D25;
+          color: #EFF6EE;
+        }
+
+        /* CAMPUS BUTTON*/
+        .campus {
+          width:100%;
+          background-color: #EFF6EE;
+          color: #991D25;
+          padding: 10px 15px;
+          outline: none;
+          border-radius: 5px;
+          margin-top: 10%;
+        }
+        .campus:not(:first-child){
+          margin-top: 0;
+        }
+        .building {
+          width:100%;
+          background-color: #EFF6EE;
+          color: #991D25;
+          padding: 10px 15px;
+          outline: none;
+          border-radius: 5px;
+          margin-top: 10%;
+        }
+        .building:not(:first-child){
+          margin-top: 0;
+        }
+
+
+        /*FILTER PAGES*/
+        .tablink {
+          background-color: #273043;
+          color: white;
+          float: left;
+          border: none;
+          outline: none;
+          cursor: pointer;
+          padding: 14px 16px;
+          font-size: 17px;
+          width: 25%;
+        }
+        .tablink:hover {
+          background-color: #202837;
+        }
+        .tabcontent {
+          color: white;
+          display: none;
+          height: 420px;
+          width:100%;
+          border-bottom: 10px solid #273043;
+          overflow: hidden;
+        }
+
+        .sub-tablink {
+          background-color: #273043;
+          color: white;
+          float: left;
+          border: none;
+          outline: none;
+          cursor: pointer;
+          padding: 8px 12px;
+          font-size: 13px;
+          width: 50%;
+        }
+        .sub-tablink:hover {
+          background-color: #202837;
+        }
+        .sub-tabcontent {
+          color: white;
+          display: none;
+          height: 420px;
+          width:100%;
+          border-bottom: 10px solid #273043;
+          overflow: hidden;
+        }
+
+        /*TIME CHOOSER*/
+        .dropbtn {
+          background-color: #EFF6EE;
+          color: #273043;
+          padding: 16px;
+          font-size: 16px;
+          border: none;
+        }
+        .dropdown {
+            font-size: 10pt
+
+        }
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #f1f1f1;
+          min-width: 160px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          z-index: 1;
+        }
+        .dropdown-content a {
+          color: black;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+        .dropdown-content a:hover {background-color: #ddd}
+        .dropdown:hover .dropdown-content {
+          display: block;
+        }
+        .dropdown:hover .dropbtn {
+            background-color: #3e8e41;
+        }
+
+        /*APPLY FILTER*/
+        .applyFilter {
+          width:20%;
+          margin-left:40%;
+          height:50px;
+          position:absolute;
+          top:540px;
+          background: #273043;
+          color: #EFF6EE;
+          outline: none;
+        }
+
+        .time-button-container{
+          height: 30px;
+          margin-top: 10%;
+          width:100%;
+          border-radius: 10px;
+          overflow: hidden;
+        }
+
+        .time-button-container:not(:first-child){
+          margin-top: 2%;
+        }
+
+        .time-button{
+          display: inline-block;
+          height: 100%;
+          outline: none;
+          background: #EFF6EE;
+          color: #991D25;
+          float:left;
+        }
+
+        .mnth{
+          width : 8.33%;
+        }
+        .day{
+          width: 14.28%;
+        }
+        .year{
+          width: 25%;
+        }
+
+        /*DATE AND TIME*/
+        .selected{
+          background-color: #991D25;
+          color: #EFF6EE;
+        }
+
+        .slidecontainer {
+            width: 100%;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 70%;
+            height: 25px;
+            background: #EFF6EE;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #273043;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #273043;
+            cursor: pointer;
+        }
+
+        .sticky {
+          position: absolute;
+          top: auto;
+          width: 80%
+        }
+
+
+      #Crime {background-color: #CFDBD5;}
+      #Location {background-color: #CFDBD5;}
+      #Time {background-color: #CFDBD5;}
+      #Weather {background-color: #CFDBD5;}
+
+
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-right" style="margin-right:20px;margin-top:20px">
+          <a class="active" href="#home">Home</a>
+          <a href="about">About Us</a>
+      </div>
+      <h1 style="padding-left:5%;color:#EFF6EE"> CecilSafe </h1>
+    </div>
+      <div class="split left">
+        <h2 id="displayTitle"></h2>
+        <div class="allDataDisplay">
+          <div class="dataDisplay">
+            <div class="display activeDisplay">
+              <div id="map"></div>
+            </div>
+
+            <div class="display">
+                <div id="chartContainer" style="height: 94%; width: 100%;">
+                </div>
+                <center>
+                <select class="dropdown" id="dd" onchange="initGraph();">
+                    <option value="Year" selected="selected">Year</option>
+                    <option value="Month">Month</option>
+                    <option value="Day">Day of Week</option>
+                    <option value="Hour">Hour of Day</option>
+                    <option value="Crime Type">Crime Type</option>
+                    <option value="Campus">Campus</option>
+                    <option value="Disposition">Disposition</option>
+                    <option value="Temperature">Average Temperature</option>
+                    <option value="Precipitation">Precipitation</option>
+                </select>
+                </center>
+            </div>
+            <div class="display">
+                <div id="dataTable" style="width: 100%; font-size: 10pt;"></div>
+            </div>
+            <a class="prev1" onclick="plusSlides(-1)">&#10094;</a>
+            <a class="next1" onclick="plusSlides(1)">&#10095;</a>
+            <div style="text-align:center">
+              <span class="dot" onclick="currentSlide(1)"></span>
+              <span class="dot" onclick="currentSlide(2)"></span>
+              <span class="dot" onclick="currentSlide(3)"></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="split right">
+        <button class="applyFilter" onclick="applyAll()">
+          Apply Filters</button>
+        <h2 class="filterTitle"> FILTERS</h2>
+        <div style="height:90%; margin-top:5%; width: 80%; margin-left: 10%; margin-right: 10%">
+          <button class="tablink" onclick="openPage('Crime', this, '#CFDBD5', 'tab')" id="defaultOpen">Crime</button>
+          <button class="tablink" onclick="openPage('Location', this, '#CFDBD5', 'tab')">Location</button>
+          <button class="tablink" onclick="openPage('Time', this, '#CFDBD5', 'tab')">Time</button>
+          <button class="tablink" onclick="openPage('Weather', this, '#CFDBD5', 'tab')">Weather</button>
+          <div id="Crime" class="tabcontent">
+
+            <div style="margin-top:1px; margin-left:10%; margin-right: 10%; width:80%;
+                overflow-x:hidden; overflow-y:hidden;" >
+            <button class="sub-tablink" style="width: 50%; margin-top: 1px;"
+                    onclick="openPage('Types', this, '#CFDBD5', 'sub-tab')" id="typeSub">Type</button>
+            <button class="sub-tablink" style="width: 50%; margin-top: 1px;"
+                    onclick="openPage('Dispositions', this, '#CFDBD5', 'sub-tab')">Disposition</button>
+
+            <div id="Types" class="sub-tabcontent" style="overflow-y:scroll">
+                <input type="text" id="crimeInput" onkeyup="search('crime')" placeholder="Search for crimes..">
+                <div style="margin-bottom: 50px;">
+                    <ul id="crime">
+                      <li><a href="#" class = "all selected"
+                        onclick="filter('all')">All</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="Dispositions" class="sub-tabcontent" style="overflow-y:scroll">
+                <input type="text" id="dispositionInput" onkeyup="search('disposition')"
+                       placeholder="Search for dispositions..">
+                <div style="margin-bottom: 50px;">
+                    <ul id="disposition">
+                      <li><a href="#" class = "disposition selected"
+                        onclick="filter('disposition')">All</a></li>
+                    </ul>
+                </div>
+            </div>
+
+          </div>
+        </div>
+
+          <div id="Location" class="tabcontent">
+            <div style="height:200px;margin-left:10%;margin-right10%;width:80%;">
+                <button class="sub-tablink" style="width: 50%; margin-top: 1px;"
+                    onclick="openPage('Campus', this, '#CFDBD5', 'sub-tab')" id="campusSub">Campus</button>
+                <button class="sub-tablink" style="width: 50%; margin-top: 1px;"
+                    onclick="openPage('Building', this, '#CFDBD5', 'sub-tab')">Building</button>
+                <div id="Campus" class="sub-tabcontent">
+                    <div style="margin-top: 10px; margin-bottom: 10px">
+                        <center><label for="171" style="color: black"> Campuses include: </label></center>
+                    </div>
+                    <button class="campus selected" id = "171" onclick="filterLoc(0, 'campus')">Pomona</button>
+                    <button class="campus selected" id = "251" onclick="filterLoc(1, 'campus')">Scripps</button>
+                    <button class="campus selected" id = "40" onclick="filterLoc(2, 'campus')">Claremont McKenna</button>
+                    <button class="campus selected" id = "219" onclick="filterLoc(3, 'campus')">Pitzer</button>
+                    <button class="campus selected" id = "95" onclick="filterLoc(4, 'campus')">Harvey Mudd</button>
+                    <button class="campus selected" id = "118" onclick="filterLoc(5, 'campus')">Keck Institute</button>
+                    <button class="campus selected" id = "4" onclick="filterLoc(6, 'campus')">Claremont Graduate University</button>
+                    <button class="campus selected" id = "76" onclick="filterLoc(7, 'campus')">Claremont University Consortium</button>
+                </div>
+                <div id="Building" class="sub-tabcontent">
+                  <div style="margin-top: 10px; margin-bottom: 10px">
+                      <center><label for="171" style="color: black"> Limit Buildings to: </label></center>
+                  </div>
+                    <button class="building" id = "Dorm"
+                        onclick="filterLoc(0, 'building')">Dormitory</button>
+                    <button class="building" id = "Academic"
+                        onclick="filterLoc(1, 'building')">Academic</button>
+                    <button class="building" id = "Dining" onclick="filterLoc(2, 'building')">Dining</button>
+                    <button class="building" id = "Sports" onclick="filterLoc(3, 'building')">Sports</button>
+                </div>
+            </div>
+          </div>
+
+          <div id="Time" class="tabcontent">
+            <div style="margin-left: 10%; width: 80%; display:inline-block">
+              <div class="time-button-container">
+                <button class = "time-button year selected" id = "2015" onclick="filterYear(0)">2015</button>
+                <button class = "time-button year selected" id = "2016" onclick="filterYear(1)">2016</button>
+                <button class = "time-button year selected" id = "2017" onclick="filterYear(2)">2017</button>
+                <button class = "time-button year selected" id = "2018" onclick="filterYear(3)">2018</button>
+              </div>
+
+              <div class="time-button-container">
+                <button class = "time-button mnth selected" id = "1" onclick="filterMnth(0)">Jan</button>
+                <button class = "time-button mnth selected" id = "2" onclick="filterMnth(1)">Feb</button>
+                <button class = "time-button mnth selected" id = "3" onclick="filterMnth(2)">Mar</button>
+                <button class = "time-button mnth selected" id = "4" onclick="filterMnth(3)">Apr</button>
+                <button class = "time-button mnth selected" id = "5" onclick="filterMnth(4)">May</button>
+                <button class = "time-button mnth selected" id = "6" onclick="filterMnth(5)">June</button>
+                <button class = "time-button mnth selected" id = "7" onclick="filterMnth(6)">July</button>
+                <button class = "time-button mnth selected" id = "8" onclick="filterMnth(7)">Aug</button>
+                <button class = "time-button mnth selected" id = "9" onclick="filterMnth(8)">Sep</button>
+                <button class = "time-button mnth selected" id = "10" onclick="filterMnth(9)">Oct</button>
+                <button class = "time-button mnth selected" id = "11" onclick="filterMnth(10)">Nov</button>
+                <button class = "time-button mnth selected" id = "12" onclick="filterMnth(11)">Dec</button>
+              </div>
+
+                <div class="time-button-container">
+                    <button class = "time-button day selected" id = "1" onclick="filterDay(0)">S</button>
+                    <button class = "time-button day selected" id = "2" onclick="filterDay(1)">M</button>
+                    <button class = "time-button day selected" id = "3" onclick="filterDay(2)">T</button>
+                    <button class = "time-button day selected" id = "4" onclick="filterDay(3)">W</button>
+                    <button class = "time-button day selected" id = "5" onclick="filterDay(4)">Th</button>
+                    <button class = "time-button day selected" id = "6" onclick="filterDay(5)">F</button>
+                    <button class = "time-button day selected" id = "7" onclick="filterDay(6)">S</button>
+                </div>
+                <div style="color:#273043; margin-top: 10%; display: inline-block;">
+                      <p>
+                        <label for="timeSliderValue">The crime occured between:</label>
+                        <input type="text" id="timeSliderValue" readonly style="border:0; color:#f6931f; font-weight:bold;">
+                      </p>
+                         <div id="timeSlider"></div>
+
+
+                      <p>
+                        <label for="daySliderValue">The crime occured between between the following days of the month:</label>
+                        <input type="text" id="daySliderValue" readonly style="border:0; color:#f6931f; font-weight:bold;">
+                      </p>
+                         <div id="daySlider"></div>
+                </div>
+              </div>
+            </div>
+            <div id="Weather" class="tabcontent">
+              <div style="margin-left: 10%; width: 80%; display:inline-block">
+                  <div style="color:#273043; margin-top: 10%; display: inline-block;">
+                      <p>
+                        <label for="maxTempSliderValue">The maximum tempreture was between:</label>
+                        <input type="text" id="maxTempSliderValue" readonly style="border:0; color:#f6931f; font-weight:bold;">
+                      </p>
+                         <div id="maxTempSlider"></div>
+
+                      <p>
+                        <label for="avgTempSliderValue">The average tempreture was between:</label>
+                        <input type="text" class="temp" id="avgTempSliderValue" readonly style="border:0; color:#f6931f; font-weight:bold;">
+                      </p>
+                         <div id="avgTempSlider"></div>
+
+
+                      <p>
+                        <label for="minTempSliderValue">The minimum tempreture was between:</label>
+                        <input type="text" id="minTempSliderValue" readonly style="border:0; color:#f6931f; font-weight:bold;">
+                      </p>
+                         <div id="minTempSlider"></div>
+
+                      <p>
+                        <label for="precipSliderValue">The amount of precipitation was between:</label>
+                        <input type="text" id="precipSliderValue" readonly style="border:0; color:#f6931f; font-weight:bold;">
+                      </p>
+                         <div id="precipSlider"></div>
+
+                  </div>
+              </div>
+          </div>
+
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+    <!-- SWITCHING BETWEEN DATA DISPLAYS-->
+    <script>
+      var displayIndex = 1;
+      showSlides(displayIndex);
+
+      function plusSlides(n) {
+        showSlides(displayIndex += n);
+      }
+
+      function currentSlide(n) {
+        showSlides(displayIndex = n);
+      }
+
+      function showSlides(n) {
+         var i;
+         var dots = document.getElementsByClassName("dot");
+         var displays = document.getElementsByClassName("display");
+         if (n > displays.length) {displayIndex = 1}
+         if (n < 1) {displayIndex = displays.length}
+         for (i = 0; i < displays.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+            displays[i].className = displays[i].className.replace(" activeDisplay", "");
+          }
+          dots[displayIndex-1].className += " active";
+          displays[displayIndex-1].className += " activeDisplay";
+      }
+    </script>
+
+    <!--BAR GRAPH-->
+    <script>
+
+    function getCrimeType(violationID) {
+        var crimeTypes = $("body").data("crimeTypes");
+        for (var type in crimeTypes) {
+            var violationArray = crimeTypes[type];
+            for (var i = 0; i < violationArray.length; i++) {
+                var violation = violationArray[i];
+                if (violation["violationID"] == violationID) {
+                    return type
+                }
+            }
+        }
+        return "unknownType";
+    }
+
+    function initDataPoints(labels) {
+        var dataPoints = [];
+        for (var i = 0; i < labels.length; i++) {
+            dataPoints[i] = {y: 0, label: labels[i]};
+        }
+        return dataPoints;
+    }
+
+    function removeZeroes(dataPoints) {
+        var newArray = [];j
+        for (var i = 0; i < dataPoints.length; i++) {
+            if (dataPoints[i].y != 0) {
+                newArray.push(dataPoints[i]);
+            }
+        }
+        return newArray;
+    }
+
+    function getCampusName(campusID) {
+        const campusIDs = {171: "POM", 251:"SCR" , 40:"CMC", 219: "PZR",
+            95: "HMC", 118: "KGI", 4: "CGU", 76: "CUC"};
+        return campusIDs[campusID];
+
+    }
+
+    function compare(a, b) {
+        if (a.label > b.label) {
+            return 1;
+        } else if (a.label < b.label) {
+            return -1;
+        }
+        return 0;
+    }
+
+    function sortAscending(dataPoints) {
+        return dataPoints.sort(compare);
+    }
+
+    function initGraph() {
+        var dropdown = document.getElementById("dd");
+        var x_axis = dropdown.options[dropdown.selectedIndex].value;
+        var title = "Number of Crimes by " + x_axis
+
+        var data = $( "body" ).data( "data" );
+        var dataPoints = [];
+
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+        if (x_axis == "Month") {
+            dataPoints = initDataPoints(monthNames);
+        } else if (x_axis == "Day") {
+            dataPoints = initDataPoints(dayNames);
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            var crimeDate = new Date(data[i]["startday"] + " " + data[i]["starttime"]);
+
+            var exists = false;
+            var datumLabel;
+            var labelAngle = 0;
+            var graphType = "column";
+
+            if (x_axis == "Year") {
+                datumLabel = crimeDate.getUTCFullYear();
+            } else if (x_axis == "Month") {
+                datumLabel = monthNames[crimeDate.getMonth()];
+                labelAngle = 50;
+            } else if (x_axis == "Day") {
+                datumLabel = dayNames[crimeDate.getDay()];
+                labelAngle = 50;
+            } else if (x_axis == "Hour") {
+                datumLabel = crimeDate.getHours();
+            } else if (x_axis == "Campus") {
+                datumLabel = getCampusName(data[i]["campus"]);
+            } else if (x_axis == "Crime Type") {
+                var violationID = data[i]["violationid"];
+                datumLabel = getCrimeType(violationID);
+            } else if (x_axis == "Disposition") {
+                datumLabel = data[i]["dispname"].trim();
+                if (datumLabel == "REPORT FORWARDED TO CPD") {datumLabel = "FWD TO CPD";}
+                labelAngle = 90;
+            } else if (x_axis == "Temperature") {
+                datumLabel = data[i]["tavg"];
+                labelAngle = 50;
+                graphType = "line";
+            } else if (x_axis == "Precipitation") {
+                datumLabel = data[i]["prcp"];
+                graphType = "line";
+            }
+
+            for (j = 0; j < dataPoints.length; j++) {
+                if (dataPoints[j] != undefined && datumLabel == dataPoints[j]["label"]) {
+                    dataPoints[j]["y"] = dataPoints[j]["y"] + 1;
+                    exists = true;
+                }
+
+            }
+
+            if (exists == false) {
+                dataPoints.push({y: 1, label: datumLabel});
+            }
+        }
+
+        if (x_axis == "Temperature" || x_axis == "Precipitation" ||
+            x_axis == "Year" || x_axis == "Hour") {
+            dataPoints = sortAscending(dataPoints);
+        } else if (x_axis == "Day" || x_axis == "Month") {
+            dataPoints = removeZeroes(dataPoints);
+        }
+
+        chart = new CanvasJS.Chart("chartContainer", {
+            animationEnabled: true,
+
+            title:{
+                text: title,
+                fontFamily: "avenir"
+            },
+            axisX:{
+                interval: 1,
+                labelAngle: labelAngle
+            },
+            axisY2:{
+                interlacedColor: "#CFDBD5",
+                gridColor: "rgba(1,77,101,.1)",
+                title: "Crimes"
+            },
+            data: [{
+                type: graphType,
+                name: "companies",
+                axisYType: "secondary",
+                color: "#991D25",
+                dataPoints: dataPoints            }]
+        });
+        chart.render();
+    }
+    </script>
+
+    <script>
+        function openPage(pageName,elmnt,color,classname) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName(classname + "content");
+            for (i = 0; i < tabcontent.length; i++) {
+              tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName(classname + "link");
+            for (i = 0; i < tablinks.length; i++) {
+              tablinks[i].style.backgroundColor = "";
+              tablinks[i].style.color = '#CFDBD5';
+            }
+            document.getElementById(pageName).style.display = "block";
+            elmnt.style.backgroundColor = color;
+            elmnt.style.color = '#273043';
+
+            if (pageName == "Location") {
+                document.getElementById("campusSub").click();
+            } else if (pageName == "Crime") {
+                document.getElementById("typeSub").click();
+            }
+
+        }
+
+        document.getElementById("defaultOpen").click();
+
+    </script>
+
+    <!--FILTER FUNCTIONS -->
+
+
+  <script>
+  $( function() {
+    $( "#timeSlider" ).slider({
+      range: false,
+      min: 0,
+      max: 1439,
+      values: [ 0, 1439 ],
+      slide: function( event, ui ) {
+        $( "#timeSliderValue" ).val( minutesToTime(ui.values[ 0 ]) + " - " + minutesToTime(ui.values[ 1 ]) );
+      }
+    });
+    $( "#timeSliderValue" ).val( minutesToTime($( "#timeSlider" ).slider( "values", 0 )) +
+      " - " + minutesToTime($( "#timeSlider" ).slider( "values", 1 )));
+  } );
+  </script>
+
+
+    <script>
+  $( function() {
+    $( "#daySlider" ).slider({
+      range: false,
+      min: 1,
+      max: 31,
+      values: [ 1, 31 ],
+      slide: function( event, ui ) {
+        $( "#daySliderValue" ).val( (ui.values[ 0 ]) + " - " + (ui.values[ 1 ]) );
+      }
+    });
+    $( "#daySliderValue" ).val( ($( "#daySlider" ).slider( "values", 0 )) +
+      " - " + ($( "#daySlider" ).slider( "values", 1 )));
+  } );
+  </script>
+
+    <!--FOR WEATHER SLIDER -->
+  <script>
+  $( function() {
+    $( "#maxTempSlider" ).slider({
+      range: true,
+      min: -100,
+      max: 200,
+      values: [ 0, 120 ],
+      slide: function( event, ui ) {
+        $( "#maxTempSliderValue" ).val( ui.values[ 0 ] + "°F - " + ui.values[ 1 ] + "°F" );
+      }
+    });
+    $( "#maxTempSliderValue" ).val($( "#maxTempSlider" ).slider( "values", 0 ) +
+      "°F - " + $( "#maxTempSlider" ).slider( "values", 1 ) + "°F" );
+  } );
+  </script>
+
+
+    <script>
+  $( function() {
+    $( "#avgTempSlider" ).slider({
+      range: true,
+      min: -100,
+      max: 200,
+      values: [ 0, 120 ],
+      slide: function( event, ui ) {
+        $( "#avgTempSliderValue" ).val( ui.values[ 0 ] + "°F - " + ui.values[ 1 ] + "°F" );
+      }
+    });
+    $( "#avgTempSliderValue" ).val($( "#avgTempSlider" ).slider( "values", 0 ) +
+      "°F - " + $( "#avgTempSlider" ).slider( "values", 1 ) + "°F" );
+  } );
+  </script>
+
+
+    <script>
+  $( function() {
+    $( "#minTempSlider" ).slider({
+      range: true,
+      min: -100,
+      max: 200,
+      values: [ 0, 120 ],
+      slide: function( event, ui ) {
+        $( "#minTempSliderValue" ).val( ui.values[ 0 ] + "°F - " + ui.values[ 1 ] + "°F" );
+      }
+    });
+    $( "#minTempSliderValue" ).val($( "#minTempSlider" ).slider( "values", 0 ) +
+      "°F - " + $( "#minTempSlider" ).slider( "values", 1 ) + "°F" );
+  } );
+  </script>
+
+
+    <script>
+  $( function() {
+    $( "#precipSlider" ).slider({
+      range: true,
+      min: 0,
+      max: 3,
+      step: .01,
+      values: [ 0, 3 ],
+      slide: function( event, ui ) {
+        $( "#precipSliderValue" ).val( ui.values[ 0 ] + " in - " + ui.values[ 1 ] + " in" );
+      }
+    });
+    $( "#precipSliderValue" ).val($( "#precipSlider" ).slider( "values", 0 ) +
+      " in - " + $( "#precipSlider" ).slider( "values", 1 ) + " in" );
+  } );
+  </script>
+
+
+    <script>
+
+      function minutesToTime(minutes){
+            var hours = Math.floor(minutes / 60);
+            var minutes = minutes - (hours * 60);
+
+            if(hours.toString().length == 1) hours = '0' + hours;
+            if(minutes.toString().length == 1) minutes = '0' + minutes;
+            return hours + ":" + minutes;
+      }
+
+      function militaryToMeri(hour) {
+        var meri = "AM";
+          if (hour == 24) {
+              hour = "11:59"
+              meri = "PM"
+          } else {
+              if (hour >= 12) {
+                  hour = hour - 12;
+                  hour = hour.toString();
+                  meri = "PM"
+              }
+              if (hour == 0) {
+                  hour = "12";
+              }
+          }
+          return [hour, meri];
+      }
+
+      function filter(s){
+          var arr = document.getElementsByClassName(s);
+          if (arr[0].classList.contains("selected")){
+            filterOff(arr);
+          }else{
+            filterOn(arr);
+          }
+      }
+
+      function filterOn(arr){
+        for (i = 0; i < arr.length; i++) {
+          if (!arr[i].classList.contains("selected")) {
+            arr[i].className += " selected";
+          }
+        }
+      }
+
+      function filterOff(arr){
+        for (i = 0; i < arr.length; i++) {
+          arr[i].className = arr[i].className.replace(" selected", "");
+        }
+      }
+
+      function filterDisp(dispName) {
+          var btn = document.getElementsByClassName(dispName);
+          if (btn[0].className.includes("selected")) {
+              btn[0].className = btn[0].className.replace(" selected","");
+          } else {
+              btn[0].className += " selected"
+          }
+      }
+
+      function filterLoc(n, loc_type){
+        var btn = document.getElementsByClassName(loc_type);
+        if (btn[n].classList.contains("selected")){
+          btn[n].className = btn[n].className.replace(" selected","");
+        }else{
+          btn[n].className += " selected"
+        }
+      }
+
+      function filterDay(n){
+        var btn = document.getElementsByClassName("day");
+        if (btn[n].classList.contains("selected")){
+          btn[n].className = btn[n].className.replace(" selected","");
+        }else{
+          btn[n].className += " selected"
+        }
+      }
+
+      function filterMnth(n){
+        var btn = document.getElementsByClassName("mnth");
+        if (btn[n].classList.contains("selected")){
+          btn[n].className = btn[n].className.replace(" selected","");
+        }else{
+          btn[n].className += " selected"
+        }
+      }
+
+      function filterYear(n){
+        var btn = document.getElementsByClassName("year");
+        if (btn[n].classList.contains("selected")){
+          btn[n].className = btn[n].className.replace(" selected","");
+        }else{
+          btn[n].className += " selected"
+        }
+      }
+
+    </script>
+
+    <!--SCRIPT FOR SEARCH-->
+    <script>
+
+
+
+      function search(className) {
+        // Declare variables
+      var input, filter, ul, li, a, i;
+      input = document.getElementById(className + "Input");
+      filter = input.value.toUpperCase();
+      ul = document.getElementById(className);
+      li = ul.getElementsByTagName('li');
+
+      // Loop through all list items, and hide those who don't match the search query
+      for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+        }
+      }
+    </script>
+
+    <!--HEAT MAP-->
+    <script>
+      var map, heatmap;
+      var data = [];
+
+      function initMap(data) {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 15,
+          center: {lat:34.100768, lng: -117.709258},
+          mapTypeId: 'roadmap'
+        });
+        loadHeatmap(data);
+      }
+
+      function loadHeatmap(data) {
+        var maxAndPoints = dataToPoints(data);
+        var dataPoints = maxAndPoints[0];
+        var max = maxAndPoints[1] * .75;
+        heatmap = new google.maps.visualization.HeatmapLayer({
+          data: dataPoints,
+          map: map,
+          opacity: 1.0,
+          radius: 15,
+          maxIntensity: max
+        });
+      }
+
+      function setPoints(coords) {
+        for (i = 0 ; i < coords.count ; i++) {
+          //map_pt = new google.map.LatLng(c.lat, c.lng);
+          //data = data + map_pt;
+        }
+      }
+
+      function getPoints() {
+          return [
+              {location : new google.maps.LatLng(34.101638, -117.707713), weight: 4}
+          ];
+        }
+
+    </script>
+
+  <script>
+
+    function replaceKey(o, old_key, new_key) {
+        if (old_key !== new_key) {
+            Object.defineProperty(o, new_key,
+                Object.getOwnPropertyDescriptor(o, old_key));
+            delete o[old_key];
+        }
+        return o;
+    }
+
+    function initPost(){
+      $.post("",function(data, status){
+        console.log(data);
+        var crimeTypeData = data.crime_types;
+        crimeTypeData = replaceKey(crimeTypeData, null, "Other");
+        var dispositionData = data.dispotions;
+        getCrimeTypes(crimeTypeData);
+        getDispositions(dispositionData);
+        $( "body" ).data( "crimeTypes", data.crime_types );
+
+        var params = get_filters();
+        console.log(params);
+        post("/search", params);
+      });
+    }
+
+    function initTable(data){
+        var tableDiv = document.getElementById("dataTable");
+        var table = document.createElement('TABLE');
+        var tableBody = document.createElement('TBODY')
+
+        table.border = '1'
+        table.appendChild(tableBody);
+
+        var heading = ["Crime", "Time", "Date", "Campus", "Building", "Status"];
+
+        var tr = document.createElement('TR');
+        tableBody.appendChild(tr);
+        for (i = 0; i < heading.length; i++) {
+            var th = document.createElement('TH')
+            th.width = '75';
+            th.appendChild(document.createTextNode(heading[i]));
+            tr.appendChild(th);
+        }
+
+        //TABLE ROWS
+        var indices = ["description", "starttime", "startday", "campus", "name", "dispname"]
+        for (i = 0; i < data.length; i++) {
+            var tr = document.createElement('TR');
+            for (j = 0; j < indices.length; j++) {
+                var td = document.createElement('TD')
+                if (indices[j] == "campus") {
+                    td.appendChild(document.createTextNode(getCampusName(data[i][indices[j]])));
+                } else {
+                    td.appendChild(document.createTextNode(data[i][indices[j]]));
+                }
+                tr.appendChild(td)
+            }
+            tableBody.appendChild(tr);
+        }
+        if (tableDiv.hasChildNodes()) {
+            var oldTable = tableDiv.childNodes[0]
+            tableDiv.replaceChild(table, oldTable);
+        } else {
+            tableDiv.appendChild(table)
+        }
+    }
+
+    function stripKeyWhiteSpace(obj) {
+        var keys = Object.keys(obj);
+        var newObj = {};
+        for (i = 0; i < keys.length; i++) {
+            var newKey = String(keys[i]).replace(/^\s+|\s+$/g, '');
+            newObj[newKey] = obj[keys[i]];
+        }
+        return newObj;
+    }
+
+    function detectDuplicateID(arr, elemID) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].id == elemID) {
+                return arr[i];
+            }
+        }
+        return null;
+    }
+
+    function getCrimeTypes(crimeTypes){
+        var ULTypes = document.getElementById("crime");
+        var crimeTypes = stripKeyWhiteSpace(crimeTypes);
+        var types = Object.keys(crimeTypes);
+
+        for (i = 0; i < types.length; i++) {
+            var li = document.createElement("li");
+            var a = document.createElement('a');
+            var container = document.createElement('div');
+            var pass = types[i];
+            var label = document.createTextNode(pass);
+            var cat = document.createElement('p');
+            cat.innerHTML = "(category)";
+
+            cat.style=" float: right; margin-top:0;";
+
+            container.style="width:100%; ";
+
+            container.appendChild(label);
+            container.appendChild(cat);
+
+            a.href = "#"
+            a.className += ("all " + pass + " selected");
+            a.appendChild(container);
+            a.onclick = (function(pass){
+              return function() { filter(pass); }
+            })(pass);
+            li.appendChild(a);
+            // li.setAttribute("id", "element4"); // added line
+            ULTypes.appendChild(li);
+        }
+        var uniqueIDs = new Set([]);
+        for (i = 0; i < types.length; i++) {
+          var key = types[i];
+          var val = crimeTypes[key];
+          for (j = 0; j < val.length; j++ ){
+              var el = document.getElementById(val[j]["violationID"]);
+              var crimes = document.getElementsByClassName("all");
+              var el = crimes
+              
+              var dup = detectDuplicateID(crimes, val[j]["violationID"]);
+
+              if (dup === null) {
+                  uniqueIDs.add(val[j]["violationID"]);
+                  var li = document.createElement("li");
+                  var a = document.createElement("a");
+                  a.href = "#";
+                  a.id = val[j]["violationID"];
+                  var text = val[j]["description"];
+                  if (text.trim() == "Null"){
+                    text = val[j]["code"];
+                  }
+                  text = formatString(text);
+                  var classText = text.replace(/\s/g, '') + "Violation";
+                  a.className += "all " + key + " " + classText + " selected";
+                  a.onclick = (function(classText){
+                    return function() { filter(classText); }
+                  })(classText);
+                  a.appendChild(document.createTextNode(text));
+                  li.appendChild(a);
+                  ULTypes.appendChild(li);
+              } else {
+                  dup.className += " " + key;
+              } 
+          }
+        }
+
+    }
+
+    function toTitleCase(str) {
+        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() +
+                txt.substr(1).toLowerCase();});
+    }
+
+    function getDispositions(disps) {
+        var ULTypes = document.getElementById("disposition");
+
+        for (i = 0; i < disps.length; i++) {
+            var li = document.createElement("li");
+            var a = document.createElement('a');
+            var dispClass = disps[i][1].replace(/\s/g, '');
+            a.href = "#"
+            a.id = disps[i][0];
+            a.className += ("disposition " + dispClass + " selected");
+            var dispDisplayText = toTitleCase(disps[i][1]);
+            a.appendChild(document.createTextNode(dispDisplayText));
+            a.onclick = (function(dispClass){
+              return function() { filterDisp(dispClass); }
+            })(dispClass);
+            li.appendChild(a);
+            // li.setAttribute("id", "element4"); // added line
+            ULTypes.appendChild(li);
+        }
+    }
+
+    function formatString(text){
+      var words = text.split(" ");
+      text = "";
+      for (w = 0; w < words.length; w++){
+        var chars = words[w].split("");
+        var word = "";
+        for (l = 0; l < chars.length; l++){
+          if (l!=0){
+            chars[l] = chars[l].toLowerCase();
+          }
+          word += chars[l];
+        }
+        text += (word + " ");
+      }
+      return text;
+    }
+
+    function dataToPoints(data) {
+        var weightedPoints = {};
+        for (var i = 0; i < data.length; i++) {
+            weightedPoints[[data[i]["lat"], data[i]["lng"]]] = 1 +
+                (weightedPoints[[data[i]["lat"], data[i]["lng"]]] + 1 || 0)
+        }
+
+        var maxWeight = 0;
+        var pointsArray = new Array();
+        for (var key in weightedPoints) {
+            var points = key.split(",");
+            var lat = parseFloat(points[0]);
+            var lng = parseFloat(points[1]);
+            if (isNaN(lat) || isNaN(lng)) {
+                // console.log("Lat or Long NaN entry, excluding");
+            } else {
+                maxWeight = Math.max(weightedPoints[key], maxWeight);
+                var weightedLoc = {location: new google.maps.LatLng(lat, lng), weight: weightedPoints[key]}
+                pointsArray.push(weightedLoc);
+            }
+        }
+        return [pointsArray, maxWeight];
+    }
+
+
+    function applyAll(){
+      var filters = get_filters();
+      console.log(filters);
+      post("/search", filters);
+    }
+
+    function post(path, params) {
+        params =  JSON.stringify(params);
+        $.post(path, params, function(response) {
+            console.log(response); // stringify
+            $( "body" ).data( "data", response );
+            document.getElementById("displayTitle").textContent= response.length + " RESULTS";
+            initMap(response);
+            initGraph();
+            initTable(response);
+        }, 'json');
+
+    }
+
+    function get_filters(){
+      var types = ["all","campus","mnth","day","year","disposition","building"];
+      var applied = {};
+      for(j = 0; j < types.length; j++){
+        var applied_instances = []
+        var instances = document.getElementsByClassName(types[j]);
+        for (i = 0; i < instances.length; i++){
+          var inst = instances[i];
+          if(inst.classList.contains("selected")){
+            if (types[j] == "campus") {
+              applied_instances.push(inst.id);
+            } else if (types[j] == "times") {
+              applied_instances = applied_instances + [inst.id];
+            } else if (types[j] == "building") {
+              applied_instances.push(true);
+            } else {
+              var parsedID = parseInt(inst.id);
+              if (isNaN(parsedID)) {
+                // console.log("Filter NaN instance ID of type:", types[j],
+                  //           "of class:", inst.className,  "with id:", inst.id);
+              } else {
+                applied_instances.push(parsedID);
+              }
+            }
+          } else {
+            if (types[j] == "building") {
+                applied_instances.push(false);
+            }
+          }
+        }
+
+        if (types[j] == "all") {
+            applied["crime"] = applied_instances;
+        } else {
+            applied[types[j]] = applied_instances;
+        }
+
+      }
+      applied["times"] = [minutesToTime($( "#timeSlider" ).slider( "values", 0 )) + ":00",
+                          minutesToTime($( "#timeSlider" ).slider( "values", 1 )) + ":00"];
+      applied["maxTemp"] = $("#maxTempSlider").slider("values");
+      applied["minTemp"] = $("#minTempSlider").slider("values");
+      applied["avgTemp"] = $("#avgTempSlider").slider("values");
+      applied["precip"] = $("#precipSlider").slider("values");
+      applied["days"] = $("#daySlider").slider("values");
+      return applied;
+    }
+
+    function formatTime(value) {
+      if (value == 24) {
+            return "23:59";
+      } else {
+          return value + ":00";
+      }
+    }
+
+
+  </script>
+
+      <!--SRC FOR HEATMAP-->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApFnvnlO7Z0x_mhTjuggIBaSNWf1YhmLo&libraries=visualization&callback=initPost">
+    </script>
+
+  </body>
+</html>

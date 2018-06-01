@@ -1,0 +1,62 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "f6ad9e695ccae541d88308d2abc753ab05a0053af10100af40ce71fc4f028edd"
+        },
+        "host-environment-markers": {
+            "implementation_name": "cpython",
+            "implementation_version": "0",
+            "os_name": "posix",
+            "platform_machine": "x86_64",
+            "platform_python_implementation": "CPython",
+            "platform_release": "16.5.0",
+            "platform_system": "Darwin",
+            "platform_version": "Darwin Kernel Version 16.5.0: Fri Mar  3 16:52:33 PST 2017; root:xnu-3789.51.2~3/RELEASE_X86_64",
+            "python_full_version": "2.7.10",
+            "python_version": "2.7",
+            "sys_platform": "darwin"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.6"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.python.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "dj-database-url": {
+            "hashes": [],
+            "version": "==0.5.0"
+        },
+        "django": {
+            "hashes": [],
+            "version": "==1.11.12"
+        },
+        "django-heroku": {
+            "hashes": [],
+            "version": "==0.3.1"
+        },
+        "gunicorn": {
+            "hashes": [],
+            "version": "==19.7.1"
+        },
+        "psycopg2": {
+            "hashes": [],
+            "version": "==2.7.4"
+        },
+        "pytz": {
+            "hashes": [],
+            "version": "==2018.3"
+        },
+        "whitenoise": {
+            "hashes": [],
+            "version": "==3.3.1"
+        }
+    },
+    "develop": {}
+}
