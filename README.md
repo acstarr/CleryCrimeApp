@@ -1,5 +1,5 @@
 # CleryCrimeApp
-An application to understand crime trends at the Claremont Colleges
+An application to understand crime trends at the Claremont Colleges created for Pomona College's CSCI133 Database course Spring 2018 under Dr. Yuqing Melanie Wu's instruction.
 
 We introduce a novel method for presenting crime and safety data to the college public. 
 While the Clery Act mandates that a daily crimelog be maintained, not all constituencies know about the log or are able to easily glean relevant information from it. 
